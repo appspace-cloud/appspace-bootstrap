@@ -1,5 +1,5 @@
 /* ========================================================================
- * Bootstrap: carousel.js v3.4.1
+ * Bootstrap: carousel.js v3.4.100
  * https://getbootstrap.com/docs/3.4/javascript/#carousel
  * ========================================================================
  * Copyright 2011-2019 Twitter, Inc.
@@ -30,7 +30,7 @@
       .on('mouseleave.bs.carousel', $.proxy(this.cycle, this))
   }
 
-  Carousel.VERSION  = '3.4.1'
+  Carousel.VERSION  = '3.4.100'
 
   Carousel.TRANSITION_DURATION = 600
 
@@ -210,8 +210,15 @@
   var clickHandler = function (e) {
     var $this   = $(this)
     var href    = $this.attr('href')
+
     if (href) {
-      href = href.replace(/.*(?=#[^\s]+$)/, '') // strip for ie7
+      if(isUnsafeHref(href)){
+        console.warn('Unsafe href detected:', href)
+        e.preventDefault()
+        return;
+      }
+
+      href = href.replace(/.*(?=#[^\s]+$)/, ''); // Strip for IE7
     }
 
     var target  = $this.attr('data-target') || href
@@ -242,5 +249,12 @@
       Plugin.call($carousel, $carousel.data())
     })
   })
+
+  // UTILITIES
+  // =========================
+
+  function isUnsafeHref(href) {
+    return href && /^javascript:/i.test(href);
+  }
 
 }(jQuery);

@@ -1,5 +1,5 @@
 /* ========================================================================
- * Bootstrap: button.js v3.4.1
+ * Bootstrap: button.js v3.4.100
  * https://getbootstrap.com/docs/3.4/javascript/#buttons
  * ========================================================================
  * Copyright 2011-2019 Twitter, Inc.
@@ -19,7 +19,7 @@
     this.isLoading = false
   }
 
-  Button.VERSION  = '3.4.1'
+  Button.VERSION  = '3.4.100'
 
   Button.DEFAULTS = {
     loadingText: 'loading...'
@@ -37,7 +37,7 @@
 
     // push to event loop to allow forms to submit
     setTimeout($.proxy(function () {
-      $el[val](data[state] == null ? this.options[state] : data[state])
+      $el[val](data[state] == null ? sanitizeHTML(this.options[state]) : sanitizeHTML(data[state]));
 
       if (state == 'loadingText') {
         this.isLoading = true
@@ -121,5 +121,14 @@
     .on('focus.bs.button.data-api blur.bs.button.data-api', '[data-toggle^="button"]', function (e) {
       $(e.target).closest('.btn').toggleClass('focus', /^focus(in)?$/.test(e.type))
     })
+
+  // UTILITIES
+  // ==============================
+
+  function sanitizeHTML(input) {
+    var div = document.createElement('div');
+    div.textContent = input;
+    return div.innerHTML;
+  }
 
 }(jQuery);
