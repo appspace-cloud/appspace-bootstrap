@@ -1,6 +1,6 @@
 /*!
  * Bootstrap v3.4.1 (https://getbootstrap.com/)
- * Copyright 2011-2019 Twitter, Inc.
+ * Copyright 2011-2024 Twitter, Inc.
  * Licensed under the MIT license
  */
 
@@ -211,7 +211,7 @@ if (typeof jQuery === 'undefined') {
 
     // push to event loop to allow forms to submit
     setTimeout($.proxy(function () {
-      $el[val](data[state] == null ? this.options[state] : data[state])
+      $el[val](data[state] == null ? sanitizeHTML(this.options[state]) : sanitizeHTML(data[state]));
 
       if (state == 'loadingText') {
         this.isLoading = true
@@ -295,6 +295,15 @@ if (typeof jQuery === 'undefined') {
     .on('focus.bs.button.data-api blur.bs.button.data-api', '[data-toggle^="button"]', function (e) {
       $(e.target).closest('.btn').toggleClass('focus', /^focus(in)?$/.test(e.type))
     })
+
+  // UTILITIES
+  // ==============================
+
+  function sanitizeHTML(input) {
+    var div = document.createElement('div');
+    div.textContent = input;
+    return div.innerHTML;
+  }
 
 }(jQuery);
 
@@ -510,8 +519,15 @@ if (typeof jQuery === 'undefined') {
   var clickHandler = function (e) {
     var $this   = $(this)
     var href    = $this.attr('href')
+
     if (href) {
-      href = href.replace(/.*(?=#[^\s]+$)/, '') // strip for ie7
+      if(isUnsafeHref(href)){
+        console.warn('Unsafe href detected:', href)
+        e.preventDefault()
+        return;
+      }
+
+      href = href.replace(/.*(?=#[^\s]+$)/, ''); // Strip for IE7
     }
 
     var target  = $this.attr('data-target') || href
@@ -542,6 +558,13 @@ if (typeof jQuery === 'undefined') {
       Plugin.call($carousel, $carousel.data())
     })
   })
+
+  // UTILITIES
+  // =========================
+
+  function isUnsafeHref(href) {
+    return href && /^javascript:/i.test(href);
+  }
 
 }(jQuery);
 
